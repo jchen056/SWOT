@@ -6,6 +6,7 @@ from PIL import Image
 import streamlit.components.v1 as components
 from nvd3 import multiBarChart
 from nvd3 import multiBarHorizontalChart
+import random
 
 st.header("SWOT Analysis")
 with st.expander("Click here to see the orginal SWOT spreadsheet"):
@@ -16,6 +17,7 @@ with st.expander("Click here to see the orginal SWOT spreadsheet"):
     df_con = pd.concat([df_S, df_O, df_W, df_T])
     df_con = df_con[['CATEGORY', 'FACTOR TYPE', 'PARAM NAME', 'MIN PROB ADJUSTED VALUE', 'MAX PROB ADJUSTED VALUE', 'AVERAGE PROB ADJUSTED VALUE',
                     'REALISTIC PROB ADJUSTED VALUE', '3 POINT BASED PROB ADJUSTED VALUE', 'PERT BASED PROB ADJUSTED VALUE']]
+
     df_con.set_axis(['Cat', 'PN', 'Parameter', 'Min', 'Max', 'Avg',
                     'Realistic', '3PT', 'PERT'], axis='columns', inplace=True)
     df_con.reset_index(drop=True)
@@ -24,8 +26,8 @@ with st.expander("Click here to see the orginal SWOT spreadsheet"):
 
 # Visualization of original data
 with st.container():
-    html_files = ["strength.html", "weakness.html",
-                  "opportunity.html", "threat.html"]
+    html_files = ["htmlFiles/strength.html", "htmlFiles/weakness.html",
+                  "htmlFiles/opportunity.html", "htmlFiles/threat.html"]
     tabs = st.tabs(["Strength", "Weakness", "Opportunity", "Threat"])
     for i, x in enumerate(tabs):
         with x:
@@ -187,7 +189,7 @@ for i in range(len(df_conMod)):
 # all the visualization combined
 with st.container():
     st.subheader("SWOT Visualization After Adding New Data")
-    with st.expander("Click here to see the new SWOT spreadshoot"):
+    with st.expander("Click here to see the new SWOT spreadsheet"):
         st.dataframe(df_con)
     swot = ["Strength", "Weakness", "Opportunity", "Threat"]
     dfS = df_conMod[df_conMod["Category"] == swot[0]]
@@ -230,7 +232,7 @@ with st.container():
                 height=alt.Step(8)).mark_bar().encode(
                 x='Data Points',
                 y='Adjusted Value',
-                color='Parameter',
+                color=alt.Color('Parameter'),
                 # color=alt.condition(
                 #     alt.datum["Adjusted Value"] > 0,
                 #     alt.value("steelblue"),  # The positive color
@@ -346,7 +348,7 @@ with st.container():
     chartSS.set_containerheader(
         "\n\n<h2>" + "SWOT Analysis for the Summation Data(Adjusted Value in K)" + "</h2>\n\n")
 
-    output_file = open('swot.html', 'w')
+    output_file = open('htmlFiles/swot.html', 'w')
     for i in range(4):
         chartSS.add_serie(name=swot[i], x=['Min', 'Max', 'Avg',
                                            'Realistic', '3PT', 'PERT'], y=df_Sum.loc[i, ['Min', 'Max', 'Avg',
@@ -357,7 +359,7 @@ with st.container():
         "Adjusted Value", label="Adjusted Value in Thousands")
     output_file.write(chartSS.htmlcontent)
     output_file.close()
-    ps = open('swot.html')
+    ps = open('htmlFiles/swot.html')
     components.html(ps.read(), height=500, width=800)
 
     df_PN = pd.DataFrame(np.zeros((2, 7)), columns=["Effects", 'Min', 'Max', 'Avg',
@@ -372,6 +374,7 @@ with st.container():
                   'Realistic', '3PT', 'PERT']] = (df_Sum.loc[1, ['Min', 'Max', 'Avg',
                                                                  'Realistic', '3PT', 'PERT']]+df_Sum.loc[3, ['Min', 'Max', 'Avg',
                                                                                                              'Realistic', '3PT', 'PERT']])
+
     df_PN.loc[2, "Effects"] = "Differetial"
     for i in ['Min', 'Max', 'Avg',
               'Realistic', '3PT', 'PERT']:

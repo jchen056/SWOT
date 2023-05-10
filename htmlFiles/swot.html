@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.js"></script>
+    </head>
+    <body>
+        
+    
+
+<h2>SWOT Analysis for the Summation Data(Adjusted Value in K)</h2>
+
+<div id="multibarchart"><svg style="width:800px;height:400px;"></svg></div>
+
+
+    <script>
+
+
+
+        data_multibarchart=[{"values": [{"x": "Min", "y": 330.0}, {"x": "Max", "y": 692.5}, {"x": "Avg", "y": 511.25}, {"x": "Realistic", "y": 527.5}, {"x": "3PT", "y": 516.6666666666666}, {"x": "PERT", "y": 522.0833333333334}], "key": "Strength", "yAxis": "1"}, {"values": [{"x": "Min", "y": -200.0}, {"x": "Max", "y": -292.0}, {"x": "Avg", "y": -246.0}, {"x": "Realistic", "y": -249.0}, {"x": "3PT", "y": -247.0}, {"x": "PERT", "y": -248.0}], "key": "Weakness", "yAxis": "1"}, {"values": [{"x": "Min", "y": 558.0}, {"x": "Max", "y": 927.5}, {"x": "Avg", "y": 742.75}, {"x": "Realistic", "y": 822.75}, {"x": "3PT", "y": 769.4166666666666}, {"x": "PERT", "y": 796.0833333333334}], "key": "Opportunity", "yAxis": "1"}, {"values": [{"x": "Min", "y": -68.5}, {"x": "Max", "y": -221.5}, {"x": "Avg", "y": -145.0}, {"x": "Realistic", "y": -161.0}, {"x": "3PT", "y": -150.33333333333331}, {"x": "PERT", "y": -155.66666666666669}], "key": "Threat", "yAxis": "1"}];
+
+    nv.addGraph(function() {
+        var chart = nv.models.multiBarChart();
+
+        chart.margin({top: 30, right: 60, bottom: 20, left: 60});
+
+        var datum = data_multibarchart;
+
+
+
+
+
+            chart.yAxis
+                .tickFormat(d3.format(',.2f'));
+
+
+      chart.showLegend(true);
+
+
+
+        
+
+
+        d3.select('#multibarchart svg')
+            .datum(datum)
+            .transition().duration(500)
+            .attr('width', 800)
+            .attr('height', 400)
+            .call(chart);
+
+
+    });
+
+
+
+
+    </script>
+
+    </body>
+</html>

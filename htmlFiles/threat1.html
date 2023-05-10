@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.7.0/nv.d3.min.js"></script>
+    </head>
+    <body>
+        
+    
+
+<h2>Threat: Adjusted Value in K</h2>
+
+<div id="multibarchart"><svg style="width:800px;height:400px;"></svg></div>
+
+
+    <script>
+
+
+
+        data_multibarchart=[{"values": [{"x": "Min", "y": -40}, {"x": "Max", "y": -100}, {"x": "Avg", "y": -70}, {"x": "Realistic", "y": -80}, {"x": "3PT", "y": -73}, {"x": "PERT", "y": -76}], "key": "Political unrest", "yAxis": "1"}, {"values": [{"x": "Min", "y": -22}, {"x": "Max", "y": -67}, {"x": "Avg", "y": -45}, {"x": "Realistic", "y": -45}, {"x": "3PT", "y": -45}, {"x": "PERT", "y": -45}], "key": "Competition", "yAxis": "1"}, {"values": [{"x": "Min", "y": -6}, {"x": "Max", "y": -54}, {"x": "Avg", "y": -30}, {"x": "Realistic", "y": -36}, {"x": "3PT", "y": -32}, {"x": "PERT", "y": -34}], "key": "Tax Code change", "yAxis": "1"}];
+
+    nv.addGraph(function() {
+        var chart = nv.models.multiBarChart();
+
+        chart.margin({top: 30, right: 60, bottom: 20, left: 60});
+
+        var datum = data_multibarchart;
+
+
+
+
+
+            chart.yAxis
+                .tickFormat(d3.format(',.2f'));
+
+
+      chart.showLegend(true);
+
+
+
+        
+
+
+        d3.select('#multibarchart svg')
+            .datum(datum)
+            .transition().duration(500)
+            .attr('width', 800)
+            .attr('height', 400)
+            .call(chart);
+
+
+    });
+
+
+
+
+    </script>
+
+    </body>
+</html>
