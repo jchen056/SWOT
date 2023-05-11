@@ -6,6 +6,10 @@ from nvd3 import multiBarChart
 from nvd3 import multiBarHorizontalChart
 import altair as alt
 import streamlit.components.v1 as components
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
 st.header("SWOT Analysis for New Data")
 uploaded_file = st.file_uploader("Choose an Excel file")
 
@@ -45,14 +49,15 @@ if uploaded_file is not None:
             df.loc[i, "Realistic"] = real_value
             df.loc[i, "3PT"] = p3_value
             df.loc[i, "PERT"] = pert_value
-        df_con = df[['CATEGORY', 'FACTOR TYPE', 'PARAM NAME',
+        df_con = df[['CATEGORY', 'FACTOR TYPE', 'PARAM NAME', 'EST. VALUE IN CURRENCY',
                     'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
-        df_con.set_axis(['Cat', 'PN', 'Parameter', 'Min', 'Max', 'Avg',
+        df_con.set_axis(['Cat', 'PN', 'Parameter', 'Est. Value', 'Min', 'Max', 'Avg',
                         'Realistic', '3PT', 'PERT'], axis='columns', inplace=True)
         df_con.reset_index(drop=True)
         df_con.index = pd.RangeIndex(start=0, stop=len(df_con), step=1)
         with tab2:
             st.dataframe(df_con)
+
     with st.container():
         st.subheader("SWOT Visualization")
         swot_cat = ["Strength", "Opportunity", "Weakness", "Threat"]
@@ -60,7 +65,7 @@ if uploaded_file is not None:
                       "htmlFiles/opportunity1.html",
                       "htmlFiles/weakness1.html",
                       "htmlFiles/threat1.html"]
-        xdata = ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
+        xdata = ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
 
         for i in range(len(swot_cat)):
             df_temp = df_con[df_con["Cat"] == swot_cat[i]]
@@ -68,11 +73,11 @@ if uploaded_file is not None:
             df_temp.index = pd.RangeIndex(start=0, stop=len(df_temp), step=1)
             # st.dataframe(df_temp)
             output_file = open(html_files[i], 'w')
-            chart = multiBarChart(width=800, height=400, x_axis_format=None)
+            chart = multiBarChart(width=850, height=400, x_axis_format=None)
             chart.set_containerheader(
                 "\n\n<h2>" + swot_cat[i]+": Adjusted Value in K" + "</h2>\n\n")
             for j in range(len(df_temp)):
-                tempA = df_temp.loc[j, ['Min', 'Max',
+                tempA = df_temp.loc[j, ['Est. Value', 'Min', 'Max',
                                         'Avg', 'Realistic', '3PT', 'PERT']]
                 tempA = [int(k/1000) for k in list(tempA)]
                 chart.add_serie(
@@ -87,31 +92,31 @@ if uploaded_file is not None:
             ["Strength", "Weakness", "Opportunity", "Threat"])
         with tS:
             p = open("htmlFiles/strength1.html")
-            components.html(p.read(), height=500, width=800)
+            components.html(p.read(), height=500, width=850)
             st.caption("multiBarChart from python-nvd3")
         with tW:
             p = open("htmlFiles/weakness1.html")
-            components.html(p.read(), height=500, width=800)
+            components.html(p.read(), height=500, width=850)
             st.caption("multiBarChart from python-nvd3")
         with tO:
             p = open("htmlFiles/opportunity1.html")
-            components.html(p.read(), height=500, width=800)
+            components.html(p.read(), height=500, width=850)
             st.caption("multiBarChart from python-nvd3")
         with tT:
             p = open("htmlFiles/threat1.html")
-            components.html(p.read(), height=500, width=800)
+            components.html(p.read(), height=500, width=850)
             st.caption("multiBarChart from python-nvd3")
     with st.container():
-        df_conMod = pd.DataFrame(np.zeros((len(df_con)*6, 5)), columns=[
+        df_conMod = pd.DataFrame(np.zeros((len(df_con)*7, 5)), columns=[
             'Category', 'Effect', 'Parameter', 'Data Points', 'Adjusted Value'])
         for i in range(len(df_con)):
-            df_conMod.loc[6*i:(6*i+6),
+            df_conMod.loc[7*i:(7*i+7),
                           'Parameter'] = df_con.loc[i, 'Parameter']
-            df_conMod.loc[6*i:(6*i+6), 'Category'] = df_con.loc[i, 'Cat']
-            df_conMod.loc[6*i:(6*i+6), 'Effect'] = df_con.loc[i, 'PN']
+            df_conMod.loc[7*i:(7*i+7), 'Category'] = df_con.loc[i, 'Cat']
+            df_conMod.loc[7*i:(7*i+7), 'Effect'] = df_con.loc[i, 'PN']
 
-            for j in range(6):
-                df_conMod.loc[6*i+j, 'Data Points'] = ['Min',
+            for j in range(7):
+                df_conMod.loc[7*i+j, 'Data Points'] = ['Est. Value', 'Min',
                                                        'Max', 'Avg', 'Realistic', '3PT', 'PERT'][j]
 
         for i in range(len(df_conMod)):
@@ -215,44 +220,47 @@ if uploaded_file is not None:
         df_Wshort = df_con[df_con["Cat"] == swot[1]]
         df_Oshort = df_con[df_con["Cat"] == swot[2]]
         df_Tshort = df_con[df_con["Cat"] == swot[3]]
-        for i in ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']:
+
+        for i in ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']:
             df_Sshort.loc["Total", i] = df_Sshort[i].sum()
             df_Wshort.loc["Total", i] = df_Wshort[i].sum()
             df_Oshort.loc["Total", i] = df_Oshort[i].sum()
             df_Tshort.loc["Total", i] = df_Tshort[i].sum()
-        df_Sum = pd.DataFrame(np.zeros((4, 7)), columns=[
-            'Category', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT'])
+
+        df_Sum = pd.DataFrame(np.zeros((4, 8)), columns=[
+            'Category', 'Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT'])
 
         t1, t2 = st.tabs(["Summation data", "Convert to K"])
         with t1:
             for i in range(len(df_Sum)):
                 df_Sum.loc[i, 'Category'] = swot[i]
-            df_Sum.loc[0, ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
-                       ] = df_Sshort.loc["Total", ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
-            df_Sum.loc[1, ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
-                       ] = df_Wshort.loc["Total", ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
-            df_Sum.loc[2, ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
-                       ] = df_Oshort.loc["Total", ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
-            df_Sum.loc[3, ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
-                       ] = df_Tshort.loc["Total", ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
+
+            df_Sum.loc[0, ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
+                       ] = df_Sshort.loc["Total", ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
+            df_Sum.loc[1, ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
+                       ] = df_Wshort.loc["Total", ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
+            df_Sum.loc[2, ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
+                       ] = df_Oshort.loc["Total", ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
+            df_Sum.loc[3, ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
+                       ] = df_Tshort.loc["Total", ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
             st.dataframe(df_Sum)
         with t2:
             def divide1000(x):
                 return x/1000
 
-            df_Sum[['Min', 'Max', 'Avg',
-                    'Realistic', '3PT', 'PERT']] = df_Sum[['Min', 'Max', 'Avg',
+            df_Sum[['Est. Value', 'Min', 'Max', 'Avg',
+                    'Realistic', '3PT', 'PERT']] = df_Sum[['Est. Value', 'Min', 'Max', 'Avg',
                                                            'Realistic', '3PT', 'PERT']].apply(divide1000)
             st.dataframe(df_Sum)
 
-        chartSS = multiBarChart(width=800, height=400, x_axis_format=None)
+        chartSS = multiBarChart(width=850, height=400, x_axis_format=None)
         chartSS.set_containerheader(
             "\n\n<h2>" + "SWOT Analysis for the Summation Data(Adjusted Value in K)" + "</h2>\n\n")
 
         output_file = open('htmlFiles/swot.html', 'w')
         for i in range(4):
-            chartSS.add_serie(name=swot[i], x=['Min', 'Max', 'Avg',
-                                               'Realistic', '3PT', 'PERT'], y=df_Sum.loc[i, ['Min', 'Max', 'Avg',
+            chartSS.add_serie(name=swot[i], x=['Est. Value', 'Min', 'Max', 'Avg',
+                                               'Realistic', '3PT', 'PERT'], y=df_Sum.loc[i, ['Est. Value', 'Min', 'Max', 'Avg',
                                                                                              'Realistic', '3PT', 'PERT']].tolist())
         chartSS.buildhtml()
         chartSS.create_x_axis("Data Points", label="Data Points")
@@ -263,32 +271,32 @@ if uploaded_file is not None:
         ps = open('htmlFiles/swot.html')
         components.html(ps.read(), height=500, width=800)
 
-        df_PN = pd.DataFrame(np.zeros((2, 7)), columns=["Effects", 'Min', 'Max', 'Avg',
+        df_PN = pd.DataFrame(np.zeros((2, 8)), columns=["Effects", 'Est. Value', 'Min', 'Max', 'Avg',
                                                         'Realistic', '3PT', 'PERT'])
         df_PN.loc[0, "Effects"] = "Positive Effect"
-        df_PN.loc[0, ['Min', 'Max', 'Avg',
-                      'Realistic', '3PT', 'PERT']] = (df_Sum.loc[0, ['Min', 'Max', 'Avg',
-                                                                     'Realistic', '3PT', 'PERT']]+df_Sum.loc[2, ['Min', 'Max', 'Avg',
+        df_PN.loc[0, ['Est. Value', 'Min', 'Max', 'Avg',
+                      'Realistic', '3PT', 'PERT']] = (df_Sum.loc[0, ['Est. Value', 'Min', 'Max', 'Avg',
+                                                                     'Realistic', '3PT', 'PERT']]+df_Sum.loc[2, ['Est. Value', 'Min', 'Max', 'Avg',
                                                                                                                  'Realistic', '3PT', 'PERT']])
         df_PN.loc[1, "Effects"] = "Negative Effect"
-        df_PN.loc[1, ['Min', 'Max', 'Avg',
-                      'Realistic', '3PT', 'PERT']] = (df_Sum.loc[1, ['Min', 'Max', 'Avg',
-                                                                     'Realistic', '3PT', 'PERT']]+df_Sum.loc[3, ['Min', 'Max', 'Avg',
+        df_PN.loc[1, ['Est. Value', 'Min', 'Max', 'Avg',
+                      'Realistic', '3PT', 'PERT']] = (df_Sum.loc[1, ['Est. Value', 'Min', 'Max', 'Avg',
+                                                                     'Realistic', '3PT', 'PERT']]+df_Sum.loc[3, ['Est. Value', 'Min', 'Max', 'Avg',
                                                                                                                  'Realistic', '3PT', 'PERT']])
 
         df_PN.loc[2, "Effects"] = "Differetial"
-        for i in ['Min', 'Max', 'Avg',
+        for i in ['Est. Value', 'Min', 'Max', 'Avg',
                   'Realistic', '3PT', 'PERT']:
             df_PN.loc[2, i] = df_PN[i].sum()
 
-        df_PN_mod = pd.DataFrame(np.zeros((len(df_PN)*6, 3)), columns=[
+        df_PN_mod = pd.DataFrame(np.zeros((len(df_PN)*7, 3)), columns=[
             'Effect', 'Data Points', 'Adjusted Value'])
         st.dataframe(df_PN)
 
         for i in range(len(df_PN)):
-            df_PN_mod.loc[6*i:(6*i+6), 'Effect'] = df_PN.loc[i, 'Effects']
-            for j in range(6):
-                df_PN_mod.loc[6*i+j, 'Data Points'] = ['Min',
+            df_PN_mod.loc[7*i:(7*i+7), 'Effect'] = df_PN.loc[i, 'Effects']
+            for j in range(7):
+                df_PN_mod.loc[7*i+j, 'Data Points'] = ['Est. Value', 'Min',
                                                        'Max', 'Avg', 'Realistic', '3PT', 'PERT'][j]
 
         for i in range(len(df_PN_mod)):
@@ -297,7 +305,7 @@ if uploaded_file is not None:
             df_PN_mod.loc[i, 'Adjusted Value'] = df_PN[df_PN["Effects"] == param][dp].tolist()[
                 0]
         # st.dataframe(df_PN_mod)
-        chartPN = alt.Chart(df_PN_mod.loc[0:11], title="Positive Effect vs Negative Effect(Adjusted Value in K)").mark_bar().encode(
+        chartPN = alt.Chart(df_PN_mod.loc[0:13], title="Positive Effect vs Negative Effect(Adjusted Value in K)").mark_bar().encode(
             x="Adjusted Value",
             y="Data Points",
             color=alt.condition(
@@ -307,7 +315,7 @@ if uploaded_file is not None:
             ),
             tooltip=['Effect', "Adjusted Value"],
         ).interactive()
-        chartdf = alt.Chart(df_PN_mod.loc[12:], title="Differential(Adjusted Value in K)").mark_bar().encode(
+        chartdf = alt.Chart(df_PN_mod.loc[14:], title="Differential(Adjusted Value in K)").mark_bar().encode(
             x="Adjusted Value",
             y="Data Points",
             color=alt.condition(

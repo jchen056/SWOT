@@ -12,14 +12,14 @@
 
 <h2>Strength: Adjusted Value in K</h2>
 
-<div id="multibarchart"><svg style="width:800px;height:400px;"></svg></div>
+<div id="multibarchart"><svg style="width:850px;height:400px;"></svg></div>
 
 
     <script>
 
 
 
-        data_multibarchart=[{"values": [{"x": "Min", "y": 200}, {"x": "Max", "y": 360}, {"x": "Avg", "y": 280}, {"x": "Realistic", "y": 280}, {"x": "3PT", "y": 280}, {"x": "PERT", "y": 280}], "key": "Patented Technology", "yAxis": "1"}, {"values": [{"x": "Min", "y": 30}, {"x": "Max", "y": 120}, {"x": "Avg", "y": 75}, {"x": "Realistic", "y": 60}, {"x": "3PT", "y": 70}, {"x": "PERT", "y": 65}], "key": "Tech Resources", "yAxis": "1"}, {"values": [{"x": "Min", "y": 100}, {"x": "Max", "y": 212}, {"x": "Avg", "y": 156}, {"x": "Realistic", "y": 187}, {"x": "3PT", "y": 166}, {"x": "PERT", "y": 177}], "key": "Transportation Access Points", "yAxis": "1"}];
+        data_multibarchart=[{"values": [{"x": "Est. Value", "y": 400}, {"x": "Min", "y": 200}, {"x": "Max", "y": 360}, {"x": "Avg", "y": 280}, {"x": "Realistic", "y": 280}, {"x": "3PT", "y": 280}, {"x": "PERT", "y": 280}], "key": "Political unrest", "yAxis": "1"}, {"values": [{"x": "Est. Value", "y": 300}, {"x": "Min", "y": 30}, {"x": "Max", "y": 120}, {"x": "Avg", "y": 75}, {"x": "Realistic", "y": 60}, {"x": "3PT", "y": 70}, {"x": "PERT", "y": 65}], "key": "Competition", "yAxis": "1"}, {"values": [{"x": "Est. Value", "y": 250}, {"x": "Min", "y": 100}, {"x": "Max", "y": 212}, {"x": "Avg", "y": 156}, {"x": "Realistic", "y": 187}, {"x": "3PT", "y": 166}, {"x": "PERT", "y": 177}], "key": "Tax Code change", "yAxis": "1"}];
 
     nv.addGraph(function() {
         var chart = nv.models.multiBarChart();
@@ -46,7 +46,7 @@
         d3.select('#multibarchart svg')
             .datum(datum)
             .transition().duration(500)
-            .attr('width', 800)
+            .attr('width', 850)
             .attr('height', 400)
             .call(chart);
 

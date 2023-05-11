@@ -12,14 +12,14 @@
 
 <h2>Weakness: Adjusted Value in K</h2>
 
-<div id="multibarchart"><svg style="width:800px;height:400px;"></svg></div>
+<div id="multibarchart"><svg style="width:850px;height:400px;"></svg></div>
 
 
     <script>
 
 
 
-        data_multibarchart=[{"values": [{"x": "Min", "y": -120}, {"x": "Max", "y": -170}, {"x": "Avg", "y": -145}, {"x": "Realistic", "y": -140}, {"x": "3PT", "y": -143}, {"x": "PERT", "y": -141}], "key": "Real Estate Cost", "yAxis": "1"}, {"values": [{"x": "Min", "y": -40}, {"x": "Max", "y": -50}, {"x": "Avg", "y": -45}, {"x": "Realistic", "y": -45}, {"x": "3PT", "y": -45}, {"x": "PERT", "y": -45}], "key": "Tech Platform Changes", "yAxis": "1"}, {"values": [{"x": "Min", "y": -40}, {"x": "Max", "y": -72}, {"x": "Avg", "y": -56}, {"x": "Realistic", "y": -64}, {"x": "3PT", "y": -58}, {"x": "PERT", "y": -61}], "key": "Access to Ports", "yAxis": "1"}];
+        data_multibarchart=[{"values": [{"x": "Est. Value", "y": -200}, {"x": "Min", "y": -120}, {"x": "Max", "y": -170}, {"x": "Avg", "y": -145}, {"x": "Realistic", "y": -140}, {"x": "3PT", "y": -143}, {"x": "PERT", "y": -141}], "key": "Real Estate Cost", "yAxis": "1"}, {"values": [{"x": "Est. Value", "y": -50}, {"x": "Min", "y": -40}, {"x": "Max", "y": -50}, {"x": "Avg", "y": -45}, {"x": "Realistic", "y": -45}, {"x": "3PT", "y": -45}, {"x": "PERT", "y": -45}], "key": "Tech Platform Changes", "yAxis": "1"}, {"values": [{"x": "Est. Value", "y": -80}, {"x": "Min", "y": -40}, {"x": "Max", "y": -72}, {"x": "Avg", "y": -56}, {"x": "Realistic", "y": -64}, {"x": "3PT", "y": -58}, {"x": "PERT", "y": -61}], "key": "Access to Ports", "yAxis": "1"}];
 
     nv.addGraph(function() {
         var chart = nv.models.multiBarChart();
@@ -46,7 +46,7 @@
         d3.select('#multibarchart svg')
             .datum(datum)
             .transition().duration(500)
-            .attr('width', 800)
+            .attr('width', 850)
             .attr('height', 400)
             .call(chart);
 

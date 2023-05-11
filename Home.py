@@ -7,6 +7,9 @@ import streamlit.components.v1 as components
 from nvd3 import multiBarChart
 from nvd3 import multiBarHorizontalChart
 import random
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 st.header("SWOT Analysis")
 with st.expander("Click here to see the orginal SWOT spreadsheet"):
@@ -15,10 +18,10 @@ with st.expander("Click here to see the orginal SWOT spreadsheet"):
     df_W = pd.read_excel("data/Weakness Analysis Data.xlsx")
     df_T = pd.read_excel("data/Threat Analysis Data.xlsx")
     df_con = pd.concat([df_S, df_O, df_W, df_T])
-    df_con = df_con[['CATEGORY', 'FACTOR TYPE', 'PARAM NAME', 'MIN PROB ADJUSTED VALUE', 'MAX PROB ADJUSTED VALUE', 'AVERAGE PROB ADJUSTED VALUE',
+    df_con = df_con[['CATEGORY', 'FACTOR TYPE', 'PARAM NAME', 'EST. VALUE IN CURRENCY', 'MIN PROB ADJUSTED VALUE', 'MAX PROB ADJUSTED VALUE', 'AVERAGE PROB ADJUSTED VALUE',
                     'REALISTIC PROB ADJUSTED VALUE', '3 POINT BASED PROB ADJUSTED VALUE', 'PERT BASED PROB ADJUSTED VALUE']]
 
-    df_con.set_axis(['Cat', 'PN', 'Parameter', 'Min', 'Max', 'Avg',
+    df_con.set_axis(['Cat', 'PN', 'Parameter', 'Est. Value', 'Min', 'Max', 'Avg',
                     'Realistic', '3PT', 'PERT'], axis='columns', inplace=True)
     df_con.reset_index(drop=True)
     df_con.index = pd.RangeIndex(start=0, stop=len(df_con), step=1)
@@ -26,6 +29,68 @@ with st.expander("Click here to see the orginal SWOT spreadsheet"):
 
 # Visualization of original data
 with st.container():
+    xdata = ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
+
+    output_file = open("htmlFiles/strength.html", 'w')
+    chart = multiBarChart(width=850, height=400, x_axis_format=None)
+    chart.set_containerheader(
+        "\n\n<h2>" + "Strength: Adjusted Value in K" + "</h2>\n\n")
+    for i in range(len(df_S)):
+        tempA = df_S.loc[i, ['EST. VALUE IN CURRENCY', 'MIN PROB ADJUSTED VALUE', 'MAX PROB ADJUSTED VALUE', 'AVERAGE PROB ADJUSTED VALUE',
+                             'REALISTIC PROB ADJUSTED VALUE', '3 POINT BASED PROB ADJUSTED VALUE', 'PERT BASED PROB ADJUSTED VALUE']]
+        tempA = [int(i/1000) for i in list(tempA)]
+        chart.add_serie(name=df_T.loc[i, "PARAM NAME"], y=tempA, x=xdata)
+    chart.buildhtml()
+    chart.create_x_axis("Data Points", label="Data Points")
+    chart.create_y_axis("Adjusted Value", label="Adjusted Value in Thousands")
+    output_file.write(chart.htmlcontent)
+    output_file.close()
+
+    output_file = open("htmlFiles/weakness.html", 'w')
+    chart = multiBarChart(width=850, height=400, x_axis_format=None)
+    chart.set_containerheader(
+        "\n\n<h2>" + "Weakness: Adjusted Value in K" + "</h2>\n\n")
+    for i in range(len(df_W)):
+        tempA = df_W.loc[i, ['EST. VALUE IN CURRENCY', 'MIN PROB ADJUSTED VALUE', 'MAX PROB ADJUSTED VALUE', 'AVERAGE PROB ADJUSTED VALUE',
+                             'REALISTIC PROB ADJUSTED VALUE', '3 POINT BASED PROB ADJUSTED VALUE', 'PERT BASED PROB ADJUSTED VALUE']]
+        tempA = [int(i/1000) for i in list(tempA)]
+        chart.add_serie(name=df_W.loc[i, "PARAM NAME"], y=tempA, x=xdata)
+    chart.buildhtml()
+    chart.create_x_axis("Data Points", label="Data Points")
+    chart.create_y_axis("Adjusted Value", label="Adjusted Value in Thousands")
+    output_file.write(chart.htmlcontent)
+    output_file.close()
+
+    output_file = open("htmlFiles/opportunity.html", 'w')
+    chart = multiBarChart(width=850, height=400, x_axis_format=None)
+    chart.set_containerheader(
+        "\n\n<h2>" + "Opportunity: Adjusted Value in K" + "</h2>\n\n")
+    for i in range(len(df_O)):
+        tempA = df_O.loc[i, ['EST. VALUE IN CURRENCY', 'MIN PROB ADJUSTED VALUE', 'MAX PROB ADJUSTED VALUE', 'AVERAGE PROB ADJUSTED VALUE',
+                             'REALISTIC PROB ADJUSTED VALUE', '3 POINT BASED PROB ADJUSTED VALUE', 'PERT BASED PROB ADJUSTED VALUE']]
+        tempA = [int(i/1000) for i in list(tempA)]
+        chart.add_serie(name=df_O.loc[i, "PARAM NAME"], y=tempA, x=xdata)
+    chart.buildhtml()
+    chart.create_x_axis("Data Points", label="Data Points")
+    chart.create_y_axis("Adjusted Value", label="Adjusted Value in Thousands")
+    output_file.write(chart.htmlcontent)
+    output_file.close()
+
+    output_file = open("htmlFiles/threat.html", 'w')
+    chart = multiBarChart(width=850, height=400, x_axis_format=None)
+    chart.set_containerheader(
+        "\n\n<h2>" + "Threat: Adjusted Value in K" + "</h2>\n\n")
+    for i in range(len(df_T)):
+        tempA = df_T.loc[i, ['EST. VALUE IN CURRENCY', 'MIN PROB ADJUSTED VALUE', 'MAX PROB ADJUSTED VALUE', 'AVERAGE PROB ADJUSTED VALUE',
+                             'REALISTIC PROB ADJUSTED VALUE', '3 POINT BASED PROB ADJUSTED VALUE', 'PERT BASED PROB ADJUSTED VALUE']]
+        tempA = [int(i/1000) for i in list(tempA)]
+        chart.add_serie(name=df_T.loc[i, "PARAM NAME"], y=tempA, x=xdata)
+    chart.buildhtml()
+    chart.create_x_axis("Data Points", label="Data Points")
+    chart.create_y_axis("Adjusted Value", label="Adjusted Value in Thousands")
+    output_file.write(chart.htmlcontent)
+    output_file.close()
+
     html_files = ["htmlFiles/strength.html", "htmlFiles/weakness.html",
                   "htmlFiles/opportunity.html", "htmlFiles/threat.html"]
     tabs = st.tabs(["Strength", "Weakness", "Opportunity", "Threat"])
@@ -34,6 +99,62 @@ with st.container():
             p = open(html_files[i])
             components.html(p.read(), height=500, width=800)
             st.caption("multiBarChart from python-nvd3")
+
+# pie chart est value, min, max, avg, realistic, 3pt, pert
+with st.container():
+
+    def generate_pie(df_S):
+        fig = make_subplots(rows=2, cols=4,
+                            specs=[[{'type': 'domain'}, {'type': 'domain'}, {'type': 'domain'}, {
+                                'type': 'domain'}], [{'type': 'domain'}, {
+                                    'type': 'domain'}, {'type': 'domain'}, {'type': 'domain'}]])
+        fig.add_trace(go.Pie(
+            labels=list(df_S['PARAM NAME']), values=[abs(i) for i in list(df_S["EST. VALUE IN CURRENCY"])], name="Est. Value"), row=1, col=1)
+        fig.add_trace(go.Pie(
+            labels=list(df_S['PARAM NAME']), values=[abs(i) for i in list(df_S["MIN PROB ADJUSTED VALUE"])], name="Min"), row=1, col=2)
+        fig.add_trace(go.Pie(
+            labels=list(df_S['PARAM NAME']), values=[abs(i) for i in list(df_S["MAX PROB ADJUSTED VALUE"])], name="Max"), row=1, col=3)
+        fig.add_trace(go.Pie(
+            labels=list(df_S['PARAM NAME']), values=[abs(i) for i in list(df_S["AVERAGE PROB ADJUSTED VALUE"])], name="Avg"), row=1, col=4)
+        fig.add_trace(go.Pie(
+            labels=list(df_S['PARAM NAME']), values=[abs(i) for i in list(df_S["REALISTIC PROB ADJUSTED VALUE"])], name="Est. Value"), row=2, col=2)
+        fig.add_trace(go.Pie(
+            labels=list(df_S['PARAM NAME']), values=[abs(i) for i in list(df_S["3 POINT BASED PROB ADJUSTED VALUE"])], name="Min"), row=2, col=3)
+        fig.add_trace(go.Pie(
+            labels=list(df_S['PARAM NAME']), values=[abs(i) for i in list(df_S["PERT BASED PROB ADJUSTED VALUE"])], name="Max"), row=2, col=4)
+
+        fig.update_traces(hole=.4, hoverinfo="label+percent")
+        fig.update_layout(
+            title_text="Pie charts: breakdown by parameters and data points",
+            # Add annotations in the center of the donut pies.
+            annotations=[dict(text='Est. Value', x=0.06, y=0.83, font_size=10, showarrow=False),
+                         dict(text='Min', x=0.37, y=0.83,
+                              font_size=10, showarrow=False),
+                         dict(text='Max', x=0.63, y=0.83,
+                              font_size=10, showarrow=False),
+                         dict(text='Avg', x=0.91, y=0.83,
+                              font_size=10, showarrow=False),
+                         dict(text='Realistic', x=0.37, y=0.18,
+                              font_size=10, showarrow=False),
+                         dict(text='3PT', x=0.63, y=0.18,
+                              font_size=10, showarrow=False),
+                         dict(text='PERT', x=0.92, y=0.18,
+                              font_size=10, showarrow=False),
+                         ])
+        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+        st.caption("Pie chart with plotly express")
+    st.subheader(
+        "Pie Charts: which parameter is biggest contributor for each category?")
+    tabS, tabW, tabO, tabT = st.tabs(
+        ["Strength", "Weakness", "Opportunity", "Threat"])
+    with tabS:
+        generate_pie(df_S)
+    with tabW:
+        generate_pie(df_W)
+    with tabO:
+        generate_pie(df_O)
+    with tabT:
+        generate_pie(df_T)
 
 # add new data
 with st.container():
@@ -161,23 +282,23 @@ with st.container():
                                                                                 'RealisticProb'],
                                                                  df_newData.loc[i, 'MaxProb'])
 
-                df_newData = df_newData[["Category", "Effect", "Parameter", "Min",
+                df_newData = df_newData[["Category", "Effect", "Parameter", "EstCurrency", "Min",
                                          "Max", "Avg", "Realistic", "3P", "PERT"]]
-                df_newData.set_axis(['Cat', 'PN', 'Parameter', 'Min', 'Max', 'Avg', 'Realistic', '3PT',
+                df_newData.set_axis(['Cat', 'PN', 'Parameter', "Est. Value", 'Min', 'Max', 'Avg', 'Realistic', '3PT',
                                      'PERT'], axis='columns', inplace=True)
                 df_con = pd.concat([df_con, df_newData])
                 df_con.index = pd.RangeIndex(start=0, stop=len(df_con), step=1)
 
 
-df_conMod = pd.DataFrame(np.zeros((len(df_con)*6, 5)), columns=[
+df_conMod = pd.DataFrame(np.zeros((len(df_con)*7, 5)), columns=[
                          'Category', 'Effect', 'Parameter', 'Data Points', 'Adjusted Value'])
 for i in range(len(df_con)):
-    df_conMod.loc[6*i:(6*i+6), 'Parameter'] = df_con.loc[i, 'Parameter']
-    df_conMod.loc[6*i:(6*i+6), 'Category'] = df_con.loc[i, 'Cat']
-    df_conMod.loc[6*i:(6*i+6), 'Effect'] = df_con.loc[i, 'PN']
+    df_conMod.loc[7*i:(7*i+7), 'Parameter'] = df_con.loc[i, 'Parameter']
+    df_conMod.loc[7*i:(7*i+7), 'Category'] = df_con.loc[i, 'Cat']
+    df_conMod.loc[7*i:(7*i+7), 'Effect'] = df_con.loc[i, 'PN']
 
-    for j in range(6):
-        df_conMod.loc[6*i+j, 'Data Points'] = ['Min',
+    for j in range(7):
+        df_conMod.loc[7*i+j, 'Data Points'] = ['Est. Value', 'Min',
                                                'Max', 'Avg', 'Realistic', '3PT', 'PERT'][j]
 
 for i in range(len(df_conMod)):
@@ -284,7 +405,7 @@ with st.container():
                 order=alt.Order('Adjusted Value', sort='ascending')
             ).interactive()
             st.altair_chart(chart2 | chart1, use_container_width=True)
-
+        st.markdown("""---""")
         with st.container():
             st.caption("External Factors")
 
@@ -314,80 +435,143 @@ with st.container():
     df_Wshort = df_con[df_con["Cat"] == swot[1]]
     df_Oshort = df_con[df_con["Cat"] == swot[2]]
     df_Tshort = df_con[df_con["Cat"] == swot[3]]
-    for i in ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']:
+    for i in ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']:
         df_Sshort.loc["Total", i] = df_Sshort[i].sum()
         df_Wshort.loc["Total", i] = df_Wshort[i].sum()
         df_Oshort.loc["Total", i] = df_Oshort[i].sum()
         df_Tshort.loc["Total", i] = df_Tshort[i].sum()
-    df_Sum = pd.DataFrame(np.zeros((4, 7)), columns=[
-        'Category', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT'])
+    df_Sum = pd.DataFrame(np.zeros((4, 8)), columns=[
+        'Category', 'Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT'])
 
     t1, t2 = st.tabs(["Summation data", "Convert to K"])
     with t1:
         for i in range(len(df_Sum)):
             df_Sum.loc[i, 'Category'] = swot[i]
-        df_Sum.loc[0, ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
-                   ] = df_Sshort.loc["Total", ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
-        df_Sum.loc[1, ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
-                   ] = df_Wshort.loc["Total", ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
-        df_Sum.loc[2, ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
-                   ] = df_Oshort.loc["Total", ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
-        df_Sum.loc[3, ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
-                   ] = df_Tshort.loc["Total", ['Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
+        df_Sum.loc[0, ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
+                   ] = df_Sshort.loc["Total", ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
+        df_Sum.loc[1, ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
+                   ] = df_Wshort.loc["Total", ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
+        df_Sum.loc[2, ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
+                   ] = df_Oshort.loc["Total", ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
+        df_Sum.loc[3, ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']
+                   ] = df_Tshort.loc["Total", ['Est. Value', 'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
         st.dataframe(df_Sum)
     with t2:
         def divide1000(x):
             return x/1000
 
-        df_Sum[['Min', 'Max', 'Avg',
-                'Realistic', '3PT', 'PERT']] = df_Sum[['Min', 'Max', 'Avg',
+        df_Sum[['Est. Value', 'Min', 'Max', 'Avg',
+                'Realistic', '3PT', 'PERT']] = df_Sum[['Est. Value', 'Min', 'Max', 'Avg',
                                                        'Realistic', '3PT', 'PERT']].apply(divide1000)
         st.dataframe(df_Sum)
+        dfSS = pd.DataFrame(np.zeros((28, 4)), columns=[
+                            "Category", "Effects", 'Data Points', 'Adjusted Value'])
+        for i in range(len(df_Sum)):
+            dfSS.loc[7*i:(7*i+7), 'Category'] = df_Sum.loc[i, 'Category']
+            for j in range(7):
+                dfSS.loc[7*i+j, 'Data Points'] = ['Est. Value', 'Min',
+                                                  'Max', 'Avg', 'Realistic', '3PT', 'PERT'][j]
 
-    chartSS = multiBarChart(width=800, height=400, x_axis_format=None)
-    chartSS.set_containerheader(
-        "\n\n<h2>" + "SWOT Analysis for the Summation Data(Adjusted Value in K)" + "</h2>\n\n")
+        for i in range(len(dfSS)):
+            param = dfSS.loc[i, "Category"]
+            if param == "Strength" or param == "Opportunity":
+                dfSS.loc[i, "Effects"] = "Positive"
+            else:
+                dfSS.loc[i, "Effects"] = "Negative"
+            dfSS.loc[i, "Cat"] = param
+            dp = dfSS.loc[i, 'Data Points']
+            dfSS.loc[i, 'Adjusted Value'] = df_Sum[df_Sum["Category"] == param][dp].tolist()[
+                0]
 
-    output_file = open('htmlFiles/swot.html', 'w')
-    for i in range(4):
-        chartSS.add_serie(name=swot[i], x=['Min', 'Max', 'Avg',
-                                           'Realistic', '3PT', 'PERT'], y=df_Sum.loc[i, ['Min', 'Max', 'Avg',
-                                                                                         'Realistic', '3PT', 'PERT']].tolist())
-    chartSS.buildhtml()
-    chartSS.create_x_axis("Data Points", label="Data Points")
-    chartSS.create_y_axis(
-        "Adjusted Value", label="Adjusted Value in Thousands")
-    output_file.write(chartSS.htmlcontent)
-    output_file.close()
-    ps = open('htmlFiles/swot.html')
-    components.html(ps.read(), height=500, width=800)
+        for i in range(len(dfSS)):
+            if dfSS.loc[i, "Category"] == "Strength" or dfSS.loc[i, "Category"] == "Weakness":
+                dfSS.loc[i, "Category"] = "Internal"
+            else:
+                dfSS.loc[i, "Category"] = "External"
 
-    df_PN = pd.DataFrame(np.zeros((2, 7)), columns=["Effects", 'Min', 'Max', 'Avg',
+    tabB, tabQ = st.tabs(
+        ["Interative SWOT for Summation Data", "Static SWOT for Summation Data"])
+    with tabB:
+        chartSS = multiBarChart(width=850, height=400, x_axis_format=None)
+        chartSS.set_containerheader(
+            "\n\n<h2>" + "SWOT Analysis for the Summation Data(Adjusted Value in K)" + "</h2>\n\n")
+
+        output_file = open('htmlFiles/swot.html', 'w')
+        for i in range(4):
+            chartSS.add_serie(name=swot[i], x=['Est. Value', 'Min', 'Max', 'Avg',
+                                               'Realistic', '3PT', 'PERT'], y=df_Sum.loc[i, ['Est. Value', 'Min', 'Max', 'Avg',
+                                                                                             'Realistic', '3PT', 'PERT']].tolist())
+        chartSS.buildhtml()
+        chartSS.create_x_axis("Data Points", label="Data Points")
+        chartSS.create_y_axis(
+            "Adjusted Value", label="Adjusted Value in Thousands")
+        output_file.write(chartSS.htmlcontent)
+        output_file.close()
+        ps = open('htmlFiles/swot.html')
+        components.html(ps.read(), height=500, width=800)
+    with tabQ:
+        chart = alt.Chart(
+            dfSS,
+            title="SWOT Analysis for Summnation Data",
+            width=60,
+            height=alt.Step(8)).mark_bar().encode(
+            x='Data Points',
+            y='Adjusted Value',
+            color=alt.condition(
+                alt.datum["Adjusted Value"] > 0,
+                alt.value("black"),  # The positive color
+                alt.value("red")  # The negative color
+            ),
+            row="Category",
+            column="Effects",
+            tooltip=["Cat", "Adjusted Value"],
+        ).properties(width=180, height=180).configure_axis(
+            grid=False
+        ).configure_title(
+            fontSize=20,
+            anchor='start',
+        ).configure_header(
+            titleColor='blue',
+            titleFontSize=15,
+            labelFontSize=14
+        ).configure_legend(
+            strokeColor='gray',
+            fillColor='#EEEEEE',
+            cornerRadius=5,
+            orient='top'
+        )
+
+        # save(chart, 'chart.png')
+        # image = Image.open('chart.png', engine="altair_saver")
+        # st.image(image, output_format='PNG')
+        st.altair_chart(chart, use_container_width=True)
+        st.caption("Compact Trellis Grid of Bar Charts from Vega-Altair")
+    df_PN = pd.DataFrame(np.zeros((2, 8)), columns=["Effects", 'Est. Value', 'Min', 'Max', 'Avg',
                                                     'Realistic', '3PT', 'PERT'])
     df_PN.loc[0, "Effects"] = "Positive Effect"
-    df_PN.loc[0, ['Min', 'Max', 'Avg',
-                  'Realistic', '3PT', 'PERT']] = (df_Sum.loc[0, ['Min', 'Max', 'Avg',
-                                                                 'Realistic', '3PT', 'PERT']]+df_Sum.loc[2, ['Min', 'Max', 'Avg',
+    df_PN.loc[0, ['Est. Value', 'Min', 'Max', 'Avg',
+                  'Realistic', '3PT', 'PERT']] = (df_Sum.loc[0, ['Est. Value', 'Min', 'Max', 'Avg',
+                                                                 'Realistic', '3PT', 'PERT']]+df_Sum.loc[2, ['Est. Value', 'Min', 'Max', 'Avg',
                                                                                                              'Realistic', '3PT', 'PERT']])
     df_PN.loc[1, "Effects"] = "Negative Effect"
-    df_PN.loc[1, ['Min', 'Max', 'Avg',
-                  'Realistic', '3PT', 'PERT']] = (df_Sum.loc[1, ['Min', 'Max', 'Avg',
-                                                                 'Realistic', '3PT', 'PERT']]+df_Sum.loc[3, ['Min', 'Max', 'Avg',
+    df_PN.loc[1, ['Est. Value', 'Min', 'Max', 'Avg',
+                  'Realistic', '3PT', 'PERT']] = (df_Sum.loc[1, ['Est. Value', 'Min', 'Max', 'Avg',
+                                                                 'Realistic', '3PT', 'PERT']]+df_Sum.loc[3, ['Est. Value', 'Min', 'Max', 'Avg',
                                                                                                              'Realistic', '3PT', 'PERT']])
 
     df_PN.loc[2, "Effects"] = "Differetial"
-    for i in ['Min', 'Max', 'Avg',
+    for i in ['Est. Value', 'Min', 'Max', 'Avg',
               'Realistic', '3PT', 'PERT']:
         df_PN.loc[2, i] = df_PN[i].sum()
 
-    df_PN_mod = pd.DataFrame(np.zeros((len(df_PN)*6, 3)), columns=[
+    df_PN_mod = pd.DataFrame(np.zeros((len(df_PN)*7, 3)), columns=[
         'Effect', 'Data Points', 'Adjusted Value'])
     st.dataframe(df_PN)
 
     for i in range(len(df_PN)):
-        df_PN_mod.loc[6*i:(6*i+6), 'Effect'] = df_PN.loc[i, 'Effects']
-        for j in range(6):
-            df_PN_mod.loc[6*i+j, 'Data Points'] = ['Min',
+        df_PN_mod.loc[7*i:(7*i+7), 'Effect'] = df_PN.loc[i, 'Effects']
+        for j in range(7):
+            df_PN_mod.loc[7*i+j, 'Data Points'] = ['Est. Value', 'Min',
                                                    'Max', 'Avg', 'Realistic', '3PT', 'PERT'][j]
 
     for i in range(len(df_PN_mod)):
@@ -395,25 +579,52 @@ with st.container():
         dp = df_PN_mod.loc[i, 'Data Points']
         df_PN_mod.loc[i, 'Adjusted Value'] = df_PN[df_PN["Effects"] == param][dp].tolist()[
             0]
-    # st.dataframe(df_PN_mod)
-    chartPN = alt.Chart(df_PN_mod.loc[0:11], title="Positive Effect vs Negative Effect(Adjusted Value in K)").mark_bar().encode(
-        x="Adjusted Value",
-        y="Data Points",
-        color=alt.condition(
-            alt.datum["Adjusted Value"] > 0,
-            alt.value("black"),  # The positive color
-            alt.value("red")  # The negative color
-        ),
-        tooltip=['Effect', "Adjusted Value"],
-    ).interactive()
-    chartdf = alt.Chart(df_PN_mod.loc[12:], title="Differential(Adjusted Value in K)").mark_bar().encode(
-        x="Adjusted Value",
-        y="Data Points",
-        color=alt.condition(
-            alt.datum["Adjusted Value"] > 0,
-            alt.value("black"),  # The positive color
-            alt.value("red")  # The negative color
-        ),
-        tooltip=['Effect', "Adjusted Value"],
-    ).interactive()
-    st.altair_chart(chartPN & chartdf, use_container_width=True)
+    tabH, tabV = st.tabs(["Horizontal", "Vertical"])
+    with tabV:
+        fig3 = go.Figure()
+        fig3.add_trace(go.Bar(x=['Est. Value', 'Min', 'Max', 'Avg',
+                                 'Realistic', '3PT', 'PERT'],
+                              y=df_PN.loc[0, ['Est. Value', 'Min', 'Max', 'Avg',
+                                              'Realistic', '3PT', 'PERT']],
+                              name="Positive Effects",
+                              marker_color="black"))
+        fig3.add_trace(go.Bar(x=['Est. Value', 'Min', 'Max', 'Avg',
+                                 'Realistic', '3PT', 'PERT'],
+                              y=df_PN.loc[1, ['Est. Value', 'Min', 'Max', 'Avg',
+                                              'Realistic', '3PT', 'PERT']],
+                              name="Negative Effects",
+                              marker_color="crimson"))
+        fig3.add_trace(go.Bar(x=['Est. Value', 'Min', 'Max', 'Avg',
+                                 'Realistic', '3PT', 'PERT'],
+                              y=df_PN.loc[2, ['Est. Value', 'Min', 'Max', 'Avg',
+                                              'Realistic', '3PT', 'PERT']],
+                              name="Differential",
+                              marker_color="lightslategrey"))
+        fig3.update_layout(
+            title_text='Positive Effects vs Negative Effects vs Differential (Adjusted Value in K)')
+        st.plotly_chart(fig3, theme="streamlit", use_container_width=True)
+        st.caption("Bar chart with Plotly Express")
+    with tabH:
+        chartPN = alt.Chart(df_PN_mod.loc[0:13], title="Positive Effect vs Negative Effect(Adjusted Value in K)").mark_bar().encode(
+            x="Adjusted Value",
+            y="Data Points",
+            color=alt.condition(
+                alt.datum["Adjusted Value"] > 0,
+                alt.value("black"),  # The positive color
+                alt.value("red")  # The negative color
+            ),
+            tooltip=['Effect', "Adjusted Value"],
+        ).interactive()
+
+        chartdf = alt.Chart(df_PN_mod.loc[14:], title="Differential(Adjusted Value in K)").mark_bar().encode(
+            x="Adjusted Value",
+            y="Data Points",
+            color=alt.condition(
+                alt.datum["Adjusted Value"] > 0,
+                alt.value("black"),  # The positive color
+                alt.value("red")  # The negative color
+            ),
+            tooltip=['Effect', "Adjusted Value"],
+        ).interactive()
+        st.altair_chart(chartPN & chartdf, use_container_width=True)
+        st.caption("Horizontal Bar Chart from Vega-Altair")
