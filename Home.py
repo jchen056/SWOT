@@ -21,8 +21,8 @@ with st.expander("Click here to see the orginal SWOT spreadsheet"):
     df_con = df_con[['CATEGORY', 'FACTOR TYPE', 'PARAM NAME', 'EST. VALUE IN CURRENCY', 'MIN PROB ADJUSTED VALUE', 'MAX PROB ADJUSTED VALUE', 'AVERAGE PROB ADJUSTED VALUE',
                     'REALISTIC PROB ADJUSTED VALUE', '3 POINT BASED PROB ADJUSTED VALUE', 'PERT BASED PROB ADJUSTED VALUE']]
 
-    df_con.set_axis(['Cat', 'PN', 'Parameter', 'Est. Value', 'Min', 'Max', 'Avg',
-                    'Realistic', '3PT', 'PERT'], axis='columns', inplace=True)
+    df_con.columns = ['Cat', 'PN', 'Parameter', 'Est. Value', 'Min', 'Max', 'Avg',
+                      'Realistic', '3PT', 'PERT']
     df_con.reset_index(drop=True)
     df_con.index = pd.RangeIndex(start=0, stop=len(df_con), step=1)
     st.dataframe(df_con)
@@ -204,8 +204,8 @@ with st.container():
         st.write(df_ans.to_dict('records'))
         df_ans = df_ans[["Category", "Effect", "Parameter", "Min",
                         "Max", "Avg", "Realistic", "3P", "PERT"]]
-        df_ans.set_axis(['Cat', 'PN', 'Parameter', 'Min', 'Max', 'Avg', 'Realistic', '3PT',
-                        'PERT'], axis='columns', inplace=True)
+        df_ans.columns = ['Cat', 'PN', 'Parameter', 'Min', 'Max', 'Avg', 'Realistic', '3PT',
+                          'PERT']
         # st.write(df_ans)
         # df_con = pd.concat([df_con, df_ans])
         # st.dataframe(df_con)
@@ -284,8 +284,8 @@ with st.container():
 
                 df_newData = df_newData[["Category", "Effect", "Parameter", "EstCurrency", "Min",
                                          "Max", "Avg", "Realistic", "3P", "PERT"]]
-                df_newData.set_axis(['Cat', 'PN', 'Parameter', "Est. Value", 'Min', 'Max', 'Avg', 'Realistic', '3PT',
-                                     'PERT'], axis='columns', inplace=True)
+                df_newData.columns = ['Cat', 'PN', 'Parameter', "Est. Value", 'Min', 'Max', 'Avg', 'Realistic', '3PT',
+                                      'PERT']
                 df_con = pd.concat([df_con, df_newData])
                 df_con.index = pd.RangeIndex(start=0, stop=len(df_con), step=1)
 

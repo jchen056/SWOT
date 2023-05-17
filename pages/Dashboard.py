@@ -51,8 +51,8 @@ if uploaded_file is not None:
             df.loc[i, "PERT"] = pert_value
         df_con = df[['CATEGORY', 'FACTOR TYPE', 'PARAM NAME', 'EST. VALUE IN CURRENCY',
                     'Min', 'Max', 'Avg', 'Realistic', '3PT', 'PERT']]
-        df_con.set_axis(['Cat', 'PN', 'Parameter', 'Est. Value', 'Min', 'Max', 'Avg',
-                        'Realistic', '3PT', 'PERT'], axis='columns', inplace=True)
+        df_con.columns = ['Cat', 'PN', 'Parameter', 'Est. Value', 'Min', 'Max', 'Avg',
+                          'Realistic', '3PT', 'PERT']
         df_con.reset_index(drop=True)
         df_con.index = pd.RangeIndex(start=0, stop=len(df_con), step=1)
         with tab2:
