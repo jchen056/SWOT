@@ -22,5 +22,5 @@ Explore different visualization tools
 - [NVD3](https://nvd3.org/): Re-usable charts for d3.js
 - [Plotly](https://plotly.com/python/getting-started/): built on top of the Plotly JavaScript library (plotly.js), plotly enables Python users to create beautiful interactive web-based visualizations that can be displayed in Jupyter notebooks, saved to standalone HTML files, or served as part of pure Python-built web applications using Dash.
 - [Vega-Altair](https://altair-viz.github.io/):a declarative visualization library for Python.
-- [Streamlit] (https://streamlit.io/): turns data scripts into shareable web apps in minutes.
+- [Streamlit](https://jchen056-swot-home-y8099m.streamlit.app/): turns data scripts into shareable web apps in minutes.
   All in pure Python.
